@@ -1,0 +1,133 @@
+﻿@model CarInsurance.Models.Insuree
+
+<h2>Create</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.FirstName)
+            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.LastName)
+            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.EmailAddress)
+            @Html.TextBoxFor(m => m.EmailAddress, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            @Html.Label("DateOfBirth")
+            <input type="date" name="DateOfBirth"
+                   value="@(Model?.DateOfBirth?.ToString("yyyy-MM-dd"))"
+                   class="form-control" />
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.CarYear)
+            @Html.TextBoxFor(m => m.CarYear, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.CarMake)
+            @Html.TextBoxFor(m => m.CarMake, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.CarModel)
+            @Html.TextBoxFor(m => m.CarModel, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.SpeedingTickets)
+            @Html.TextBoxFor(m => m.SpeedingTickets, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group">
+            @Html.Label("DUI")
+            <input type="checkbox" name="DUI" value="true" @(Model?.DUI == true ? "checked" : "") />
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Full Coverage")
+            <input type="checkbox" name="CoverageType" value="true" @(Model?.CoverageType == true ? "checked" : "") />
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Create" class="btn btn-primary" />
+        </div>
+    </div>
+}
+
+
+
+// GET: Insuree/Details/5
+public ActionResult Details(int? id)
+{
+    if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+    var insuree = db.Insurees.Find(id);
+    if (insuree == null) return HttpNotFound();
+
+    return View(insuree);
+}
+
+// GET: Insuree/Edit/5
+public ActionResult Edit(int? id)
+{
+    if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+    var insuree = db.Insurees.Find(id);
+    if (insuree == null) return HttpNotFound();
+
+    return View(insuree);
+}
+
+// POST: Insuree/Edit/5
+[HttpPost]
+[ValidateAntiForgeryToken]
+public ActionResult Edit([Bind(Include = "Id,FirstName,LastName,EmailAddress,DateOfBirth,CarYear,CarMake,CarModel,SpeedingTickets,DUI,CoverageType")] Insuree insuree)
+{
+    if (ModelState.IsValid)
+    {
+        // Recalculate quote on edit (good practice)
+        insuree.Quote = CalculateQuote(insuree);
+
+        db.Entry(insuree).State = EntityState.Modified;
+        db.SaveChanges();
+        return RedirectToAction("Index");
+    }
+    return View(insuree);
+}
+
+// GET: Insuree/Delete/5
+public ActionResult Delete(int? id)
+{
+    if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+    var insuree = db.Insurees.Find(id);
+    if (insuree == null) return HttpNotFound();
+
+    return View(insuree);
+}
+
+// POST: Insuree/Delete/5
+[HttpPost, ActionName("Delete")]
+[ValidateAntiForgeryToken]
+public ActionResult DeleteConfirmed(int id)
+{
+    var insuree = db.Insurees.Find(id);
+    db.Insurees.Remove(insuree);
+    db.SaveChanges();
+    return RedirectToAction("Index");
+}
+
+
